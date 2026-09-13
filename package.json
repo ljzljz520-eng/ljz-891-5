@@ -1,0 +1,17 @@
+{
+  "name": "expo-pass",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "seed": "node seed.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "展会入场码查询系统",
+  "dependencies": {
+    "express": "^5.2.1",
+    "sql.js": "^1.14.2"
+  }
+}
