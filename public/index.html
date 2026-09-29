@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>展会入场码查询 · EXPO 2026</title>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/query.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#7fe9ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="16" rx="2.5"/>
+        <path d="M3 9h18"/>
+        <path d="M7 14h4"/>
+        <path d="M7 17h7"/>
+        <circle cx="16.5" cy="15.5" r="2.2"/>
+      </svg>
+    </div>
+    <div class="brand-text">
+      <div class="title">2026 国际智能产业博览会</div>
+      <div class="subtitle">EXPO&nbsp;ENTRY&nbsp;VERIFICATION</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <a class="btn btn-ghost btn-sm" href="/admin">管理后台</a>
+  </div>
+</header>
+
+<main class="page query-page">
+  <div class="container query-layout">
+
+    <!-- 左侧引导 -->
+    <section class="query-hero fade-up">
+      <div class="hero-tag">
+        <span class="hero-tag-dot"></span>
+        官方入场信息核验通道
+      </div>
+      <h1 class="hero-title">入场信息<br><span class="gradient-text">一键核验</span></h1>
+      <p class="hero-desc">
+        请输入报名时使用的<span class="hl">手机号</span>与收到的<span class="hl">入场码</span>，
+        即可查询您的观展凭证、所属展区与核验状态。
+      </p>
+      <ul class="hero-steps">
+        <li>
+          <span class="step-num">01</span>
+          <div><strong>输入凭证</strong><small>手机号 + 入场码</small></div>
+        </li>
+        <li>
+          <span class="step-num">02</span>
+          <div><strong>系统核验</strong><small>实时比对票务数据</small></div>
+        </li>
+        <li>
+          <span class="step-num">03</span>
+          <div><strong>查看结果</strong><small>票种 / 日期 / 展区 / 状态</small></div>
+        </li>
+      </ul>
+      <div class="hero-notice">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4.5M12 16h.01"/></svg>
+        信息经加密通道传输，仅用于本次入场核验
+      </div>
+    </section>
+
+    <!-- 右侧查询卡片 -->
+    <section class="query-card-wrap fade-up delay-1">
+      <div class="panel query-card">
+        <div class="card-head">
+          <h2>入场码查询</h2>
+          <span class="head-line"></span>
+        </div>
+
+        <form id="queryForm" class="card-body" autocomplete="off">
+          <div class="field">
+            <label for="phone">手机号<span class="req">*</span></label>
+            <input class="input" type="tel" id="phone" name="phone"
+                   maxlength="11" inputmode="numeric" placeholder="请输入 11 位报名手机号">
+          </div>
+          <div class="field">
+            <label for="code">入场码<span class="req">*</span></label>
+            <input class="input input-mono" type="text" id="code" name="code"
+                   maxlength="40" placeholder="例如 EXPO2026-A8K3M9">
+          </div>
+
+          <div id="alertBox" class="alert alert-error hidden"></div>
+
+          <button type="submit" class="btn btn-primary btn-block" id="submitBtn">
+            <span id="btnText">立即查询</span>
+          </button>
+
+          <button type="button" class="btn btn-ghost btn-block" id="demoBtn">填入演示数据</button>
+        </form>
+
+        <!-- 查询结果 -->
+        <div id="resultPanel" class="result-panel hidden">
+          <div class="result-header">
+            <div class="result-icon" id="resultIcon"></div>
+            <div>
+              <div class="result-label">核验结果</div>
+              <div class="result-title" id="resultTitle">查询成功</div>
+            </div>
+            <span id="resultBadge"></span>
+          </div>
+
+          <div class="result-name-row">
+            <div>
+              <div class="rn-label">观众姓名</div>
+              <div class="rn-value" id="rName">—</div>
+            </div>
+            <div class="rn-phone" id="rPhone">—</div>
+          </div>
+
+          <div class="result-grid">
+            <div class="result-item">
+              <div class="ri-label">票种</div>
+              <div class="ri-value" id="rType">—</div>
+            </div>
+            <div class="result-item">
+              <div class="ri-label">入场日期</div>
+              <div class="ri-value" id="rDate">—</div>
+            </div>
+            <div class="result-item full">
+              <div class="ri-label">所属展区</div>
+              <div class="ri-value" id="rZone">—</div>
+            </div>
+            <div class="result-item full">
+              <div class="ri-label">核验状态</div>
+              <div class="ri-value" id="rStatus">—</div>
+            </div>
+          </div>
+
+          <div class="result-foot">
+            <span id="resultTip"></span>
+            <button type="button" class="btn btn-ghost btn-sm" id="againBtn">重新查询</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="query-footer">
+    © 2026 国际智能产业博览会组委会 · 入场核验服务台 400-800-2026
+  </footer>
+</main>
+
+<script src="/js/query.js"></script>
+</body>
+</html>

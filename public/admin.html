@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>管理后台 · 展会入场码查询系统</title>
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+
+<!-- ========== 登录视图 ========== -->
+<div id="loginView" class="login-view">
+  <div class="panel login-card fade-up">
+    <div class="login-brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7fe9ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="10" width="16" height="11" rx="2.5"/>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        </svg>
+      </div>
+      <div>
+        <h1>票务管理控制台</h1>
+        <p>EXPO ENTRY · ADMIN CONSOLE</p>
+      </div>
+    </div>
+    <form id="loginForm">
+      <div class="field">
+        <label>管理员账号</label>
+        <input class="input" id="loginUsername" type="text" autocomplete="username" placeholder="请输入账号">
+      </div>
+      <div class="field">
+        <label>登录密码</label>
+        <input class="input" id="loginPassword" type="password" autocomplete="current-password" placeholder="请输入密码">
+      </div>
+      <div id="loginAlert" class="alert alert-error hidden"></div>
+      <button type="submit" class="btn btn-primary btn-block" id="loginBtn">
+        <span id="loginBtnText">登 录</span>
+      </button>
+    </form>
+    <div class="login-foot">
+      <a href="/">← 返回观众查询页</a>
+      <span class="muted">默认演示账号 admin / admin123</span>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 主界面 ========== -->
+<div id="appView" class="hidden">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7fe9ff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="16" rx="2.5"/>
+          <path d="M3 9h18M8 14h3M8 17h6"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <div class="title">票务管理控制台</div>
+        <div class="subtitle">ADMIN&nbsp;CONSOLE</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <a class="btn btn-ghost btn-sm" href="/" target="_blank">观众端</a>
+      <div class="admin-chip">
+        <span class="dot"></span>
+        <span id="adminName">—</span>
+        <span id="adminRole" class="badge"></span>
+      </div>
+      <button class="btn btn-ghost btn-sm" id="logoutBtn">退出</button>
+    </div>
+  </header>
+
+  <main class="page admin-main">
+    <div class="container">
+      <!-- Tab 导航 -->
+      <nav class="tabs">
+        <button class="tab active" data-tab="dashboard">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+          数据概览
+        </button>
+        <button class="tab" data-tab="tickets">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2.5a2 2 0 0 0 0 5V17a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2.5a2 2 0 0 0 0-5z"/><path d="M13 5v14" stroke-dasharray="2 2"/></svg>
+          票码管理
+        </button>
+        <button class="tab" data-tab="logs">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3.5-7.1"/><path d="M21 4v5h-5"/></svg>
+          查询记录
+        </button>
+        <button class="tab" data-tab="admins" id="tabAdmins" style="display:none">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c.6-3.2 2.9-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M15.5 15.2c2.7.2 4.4 1.8 5 4.3"/></svg>
+          管理员
+        </button>
+      </nav>
+
+      <!-- 全局提示 -->
+      <div id="appAlert" class="alert hidden"></div>
+
+      <!-- ===== 数据概览 ===== -->
+      <section id="tab-dashboard" class="tab-panel">
+        <div class="stat-grid">
+          <div class="stat-card panel fade-up">
+            <div class="stat-icon ic-blue">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v2.5a2 2 0 0 0 0 5V17a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2.5a2 2 0 0 0 0-5z"/><path d="M13 5v14" stroke-dasharray="2 2"/></svg>
+            </div>
+            <div class="stat-meta">
+              <div class="stat-value" id="stTotalTickets">0</div>
+              <div class="stat-label">票码总数</div>
+            </div>
+          </div>
+          <div class="stat-card panel fade-up delay-1">
+            <div class="stat-icon ic-green">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.1V12a10 10 0 1 1-5.9-9.1"/><path d="M22 4L12 14.1l-3-3"/></svg>
+            </div>
+            <div class="stat-meta">
+              <div class="stat-value" id="stTodayVerified">0</div>
+              <div class="stat-label">今日成功查询</div>
+            </div>
+          </div>
+          <div class="stat-card panel fade-up delay-1">
+            <div class="stat-icon ic-amber">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            </div>
+            <div class="stat-meta">
+              <div class="stat-value" id="stTodayQueries">0</div>
+              <div class="stat-label">今日查询次数</div>
+            </div>
+          </div>
+          <div class="stat-card panel fade-up delay-2">
+            <div class="stat-icon ic-purple">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="stat-meta">
+              <div class="stat-value" id="stTotalLogs">0</div>
+              <div class="stat-label">累计查询记录</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel status-panel fade-up delay-2">
+          <div class="panel-title">
+            <h3>核验状态分布</h3>
+            <span class="muted" id="stAdminsLine"></span>
+          </div>
+          <div class="status-bars" id="statusBars"></div>
+        </div>
+      </section>
+
+      <!-- ===== 票码管理 ===== -->
+      <section id="tab-tickets" class="tab-panel hidden">
+        <div class="panel list-panel">
+          <div class="toolbar">
+            <div class="toolbar-filters">
+              <input class="input toolbar-search" id="ticketKeyword" placeholder="搜索姓名 / 手机号 / 入场码 / 票种 / 展区">
+              <select class="input toolbar-status" id="ticketStatus">
+                <option value="">全部状态</option>
+                <option value="未核验">未核验</option>
+                <option value="已核验">已核验</option>
+                <option value="已入场">已入场</option>
+                <option value="已作废">已作废</option>
+              </select>
+              <button class="btn btn-sm" id="ticketSearchBtn">查询</button>
+            </div>
+            <div class="toolbar-actions">
+              <a class="btn btn-ghost btn-sm" href="/api/tickets/template">下载模板</a>
+              <button class="btn btn-ghost btn-sm" id="importBtn">批量导入</button>
+              <button class="btn btn-ghost btn-sm" id="exportBtn">导出 CSV</button>
+              <button class="btn btn-primary btn-sm" id="addTicketBtn">+ 新增票码</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr>
+                  <th>入场码</th><th>姓名</th><th>手机号</th><th>票种</th>
+                  <th>所属展区</th><th>入场日期</th><th>状态</th><th>创建人</th><th style="width:150px">操作</th>
+                </tr>
+              </thead>
+              <tbody id="ticketTbody"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="ticketPager"></div>
+        </div>
+      </section>
+
+      <!-- ===== 查询记录 ===== -->
+      <section id="tab-logs" class="tab-panel hidden">
+        <div class="panel list-panel">
+          <div class="toolbar">
+            <div class="toolbar-filters">
+              <input class="input toolbar-search" id="logKeyword" placeholder="搜索手机号 / 入场码 / 姓名">
+              <select class="input toolbar-status" id="logResult">
+                <option value="">全部结果</option>
+                <option value="success">查询成功</option>
+                <option value="fail">查询失败</option>
+              </select>
+              <button class="btn btn-sm" id="logSearchBtn">查询</button>
+            </div>
+            <div class="muted" id="logHint">记录观众的每次查询行为（含失败原因、IP 与时间）</div>
+          </div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead>
+                <tr><th>时间</th><th>手机号</th><th>入场码</th><th>结果</th><th>说明</th><th>IP</th></tr>
+              </thead>
+              <tbody id="logTbody"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="logPager"></div>
+        </div>
+      </section>
+
+      <!-- ===== 管理员 ===== -->
+      <section id="tab-admins" class="tab-panel hidden">
+        <div class="panel list-panel">
+          <div class="toolbar">
+            <div class="toolbar-filters"><strong style="font-size:15px">管理员账号</strong></div>
+            <div class="toolbar-actions">
+              <button class="btn btn-primary btn-sm" id="addAdminBtn">+ 新增管理员</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="data">
+              <thead><tr><th>账号</th><th>显示名称</th><th>角色</th><th>创建时间</th><th style="width:210px">操作</th></tr></thead>
+              <tbody id="adminTbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- ========== 票码弹窗 ========== -->
+<div class="modal-mask" id="ticketModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="ticketModalTitle">新增票码</h3>
+      <button class="modal-close" data-close="ticketModal">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field full">
+          <label>入场码<span class="req">*</span></label>
+          <input class="input input-mono" id="fCode" placeholder="如 EXPO2026-XXXXXX">
+          <small class="muted">不区分大小写，将自动去除空格并转大写</small>
+        </div>
+        <div class="field">
+          <label>手机号<span class="req">*</span></label>
+          <input class="input" id="fPhone" maxlength="11" placeholder="11 位手机号">
+        </div>
+        <div class="field">
+          <label>姓名<span class="req">*</span></label>
+          <input class="input" id="fName" placeholder="观众姓名">
+        </div>
+        <div class="field">
+          <label>票种</label>
+          <input class="input" id="fTicketType" placeholder="如 VIP专业观众票" list="ticketTypeList">
+          <datalist id="ticketTypeList">
+            <option value="普通观众票"><option value="专业观众票">
+            <option value="VIP专业观众票"><option value="媒体证"><option value="参展商证">
+          </datalist>
+        </div>
+        <div class="field">
+          <label>核验状态</label>
+          <select class="input" id="fStatus">
+            <option>未核验</option><option>已核验</option><option>已入场</option><option>已作废</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>所属展区</label>
+          <input class="input" id="fZone" placeholder="如 A馆 · 智能制造展区">
+        </div>
+        <div class="field full">
+          <label>入场日期<span class="req">*</span></label>
+          <input class="input" id="fEntryDate" type="date">
+        </div>
+        <div class="field full">
+          <label>备注</label>
+          <textarea class="input" id="fNote" placeholder="可选"></textarea>
+        </div>
+      </div>
+      <div id="ticketFormAlert" class="alert alert-error hidden"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close="ticketModal">取消</button>
+      <button class="btn btn-primary" id="saveTicketBtn">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 导入弹窗 ========== -->
+<div class="modal-mask" id="importModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>批量导入票码</h3>
+      <button class="modal-close" data-close="importModal">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-info">
+        <div>
+          支持 <strong>CSV 文件</strong> 或直接粘贴文本，首行须为表头。必需列：<strong>入场码、手机号、姓名</strong>；
+          可选列：票种、所属展区、入场日期、核验状态、备注。
+          <a href="/api/tickets/template">点此下载 CSV 模板</a>
+        </div>
+      </div>
+      <div class="field">
+        <label>选择 CSV 文件</label>
+        <input class="input" type="file" id="importFile" accept=".csv,text/csv,text/plain">
+      </div>
+      <div class="field">
+        <label>或粘贴 CSV 内容</label>
+        <textarea class="input" id="importText" style="min-height:140px;font-family:var(--mono);font-size:12.5px"
+          placeholder="入场码,手机号,姓名,票种,所属展区,入场日期,核验状态,备注&#10;EXPO2026-X1,13800001111,张三,普通观众票,A馆,2026-10-15,未核验,"></textarea>
+      </div>
+      <div id="importResult"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close="importModal">关闭</button>
+      <button class="btn btn-primary" id="doImportBtn">开始导入</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 管理员弹窗 ========== -->
+<div class="modal-mask" id="adminModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="adminModalTitle">新增管理员</h3>
+      <button class="modal-close" data-close="adminModal">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <label>登录账号<span class="req">*</span></label>
+        <input class="input" id="afUsername" placeholder="3-20 位小写字母 / 数字 / 下划线">
+      </div>
+      <div class="field">
+        <label>显示名称</label>
+        <input class="input" id="afDisplayName" placeholder="如 张运营">
+      </div>
+      <div class="field">
+        <label>角色</label>
+        <select class="input" id="afRole">
+          <option value="admin">管理员（票码与记录管理）</option>
+          <option value="super">超级管理员（全部权限）</option>
+        </select>
+      </div>
+      <div class="field">
+        <label id="afPasswordLabel">初始密码<span class="req">*</span></label>
+        <input class="input" id="afPassword" type="password" placeholder="至少 6 位">
+        <small class="muted" id="afPasswordHint"></small>
+      </div>
+      <div id="adminFormAlert" class="alert alert-error hidden"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close="adminModal">取消</button>
+      <button class="btn btn-primary" id="saveAdminBtn">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 确认弹窗 ========== -->
+<div class="modal-mask" id="confirmModal">
+  <div class="modal" style="width:420px">
+    <div class="modal-head"><h3 id="confirmTitle">确认操作</h3><button class="modal-close" data-close="confirmModal">×</button></div>
+    <div class="modal-body"><p id="confirmText" style="line-height:1.8;color:var(--text-dim);font-size:14px"></p></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" data-close="confirmModal">取消</button>
+      <button class="btn btn-danger" id="confirmOkBtn">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/admin.js"></script>
+</body>
+</html>
